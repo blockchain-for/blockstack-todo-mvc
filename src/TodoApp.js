@@ -1,69 +1,97 @@
 import React from  'react';
 
 class TodoApp extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { items: [], text: ''};
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-    }
-
-    render() {
-        return (
-            <div>
-                <h3>Blockstack Todo MVC</h3>
-                <TodoList items={this.state.items} />
-                <form onSubmit={this.handleSubmit}>
-                    <label htmlFor="new-todo">
-                        What needs to be done?
-                    </label>
-                    <input
-                        id="new-todo"
-                        onChange={this.handleChange}
-                        value={this.state.text}
-                        />
-                    <div>
-                        <button>
-                            增加待办事项
-                        </button>
-                    </div>
-                </form>
-            </div>
-        );
-    }
-
-    handleChange(e) {
-        this.setState({text: e.target.value});
-    }
-
-    handleSubmit(e) {
-        e.preventDefault();
-        if (this.state.text.length === 0) {
-            return;
+    state = {
+        todos: [],
+        newTodo: "",
+      }
+    
+    
+      handleCheckboxClick(id) {
+        let newTodos = [...this.state.todos]
+        newTodos[newTodos.findIndex(todo => todo.id === id)].done = true
+        this.setState({
+          todos: newTodos,
+        })
+      }
+    
+    
+      handleAddTodoClick = e => {
+        e.preventDefault()
+        const newTodo = {
+          id: this.state.todos.length + 1,
+          title: this.state.newTodo,
+          done: false,
         }
-
-        const newItem = {
-            text: this.state.text,
-            id: Date.now()
-        };
-
-        this.setState(state => ({
-            items: state.items.concat(newItem),
-            text: ''
-        }));
-    }
-}
-
-class TodoList extends React.Component {
-    render() {
+        const todos = [...this.state.todos]
+        todos.push(newTodo)
+        this.setState({
+          todos: todos,
+          newTodo: "",
+        })
+      }
+    
+    
+      hanldeInputChange = e => {
+        this.setState({
+          newTodo: e.target.value,
+        })
+      }
+    
+    
+      render() {
         return (
-            <ul>
-                {this.props.items.map(item => (
-                    <li key={item.id}>{item.text}</li>
-                ))}
-            </ul>
-        );
-    }
+          <div
+            style={{ padding: "30px 0" }}
+            className="ui text container center aligned"
+          >
+            <h2>Blackstack Todo MVC</h2>
+            <div className="ui grid">
+              <div className="row centered">
+                <div className="column twelve wide">
+                  <form className="ui form" onSubmit={this.handleAddTodoClick}>
+                    <div className="inline fields">
+                      <div className="twelve wide field">
+                        <input
+                          type="text"
+                          value={this.state.newTodo}
+                          onChange={this.hanldeInputChange}
+                        />
+                      </div>
+                      <button className="ui button primary" type="submit">
+                        Add todo
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <div className="row centered">
+                <div className="column twelve wide">
+                  <div className="grouped fields">
+                    {this.state.todos
+                      .filter(todo => !todo.done)
+                      .map(todo => (
+                        <div key={todo.id} className="field">
+                          <div className="ui checkbox">
+                            <input
+                              type="checkbox"
+                              onClick={() => {
+                                this.handleCheckboxClick(todo.id)
+                              }}
+                            />
+                            <label>{todo.title}</label>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      }
 }
+
+
 
 export default TodoApp;
