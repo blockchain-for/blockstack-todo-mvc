@@ -10,12 +10,21 @@ const appConfig = new AppConfig(['store_write', 'publish_data']);
 const userSession = new UserSession({ appConfig: appConfig });
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    console.log(appConfig);
+    console.log(userSession);
+  }
+  
   componentWillMount() {
     if (userSession.isSignInPending()) {
       userSession
         .handlePendingSignIn()
-        .then(() => {
-          window.location = window.location.origin;
+        .then(userData => {
+          //window.location = window.location.origin;
+          window.history.replaceState({}, document.title, "/");
+          console.log("the userData is " + userData);
+          this.setState({ userData: userData });
         })
         .catch(err => console.log(err));
     }
