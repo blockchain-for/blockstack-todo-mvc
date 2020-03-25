@@ -1,5 +1,9 @@
 import React, { Component } from  'react';
 
+
+import { remove, add, check, jsonCopy } from './utils'
+import { TASK_DATA_FILENAME, ENCYPT_OPTIONS, DECRYPT_OPTIONS } from './constants'
+
 class TodoApp extends Component {
   constructor(props) {
   	super(props);
@@ -13,38 +17,76 @@ class TodoApp extends Component {
     this.addTask = this.addTask.bind(this);
     this.removeTask = this.removeTask.bind(this);
     this.checkTask = this.checkTask.bind(this);
-    this.changeTask = this.changeTask.bind(this);
+    this.handleTaskChange = this.handleTaskChange.bind(this);
   }
   
-  handleCheckboxClick(id) {
-    let newTodos = [...this.state.todos]
-    newTodos[newTodos.findIndex(todo => todo.id === id)].done = true
-    this.setState({
-      todos: newTodos,
-    })
+  componentWillMount() {
+    this.loadTasks();  
   }
+  
+  componentWillReceiveProps(nextProps) {
+    const nextTasks = nextProps.tasks;
 
-
-  handleAddTodoClick = e => {
-    e.preventDefault()
-    const newTodo = {
-      id: this.state.todos.length + 1,
-      title: this.state.newTodo,
-      done: false,
+    if (nextTasks) {
+      if (nextTasks.length !== this.state.tasks.length) {
+        this.setState({ tasks: jsonCopy(nextTasks) });
+      }
     }
-    const todos = [...this.state.todos]
-    todos.push(newTodo)
-    this.setState({
-      todos: todos,
-      newTodo: "",
-    })
   }
 
+  // 加载数据
+  loadTasks() {
+    const { userSession } = this.props
 
-  hanldeInputChange = e => {
-    this.setState({
-      newTodo: e.target.value,
-    })
+    userSession.getFile(TASK_DATA_FILENAME, DECRYPT_OPTIONS)
+      .then((rawTask) => {
+        if (rawTask) {
+          const tasks = JSON.parse(rawTask || '[]')
+          console.log(tasks);
+          this.setState({
+            tasks
+          });
+        }
+        
+      })
+      .finally(() => {
+        console.log("load data from gaia completed!")
+      })
+  }
+
+  // 增加任务
+  addTask(event) {
+    event.preventDefault();
+    const tasks = add(this.state);
+
+    this.setState({value: '', tasks});
+   
+    this.saveTasks(tasks, ENCYPT_OPTIONS);
+  }
+
+  // 保存任务
+  saveTasks(tasks) {
+    console.log("Starting save task to blockstack ......");
+    this.props.userSession.putFile(TASK_DATA_FILENAME, JSON.stringify(tasks), ENCYPT_OPTIONS);
+    console.log("Saved data to Blockstack completed!");
+  }
+
+  // 删除任务
+  removeTask(event) {
+    event.preventDefault();
+    const tasks = remove(event.currentTarget.dataset.index, this.state);
+    this.setState({ tasks });
+    this.saveTasks(tasks, ENCYPT_OPTIONS);
+  }
+
+  checkTask(event) {
+    const tasks = check(event.target.dataset.index, this.state);
+    this.setState({ tasks });
+    this.saveTasks(tasks);
+  }
+
+  handleTaskChange(event) {
+    this.setState({ value: event.target.value });
   }
 
 
@@ -58,13 +100,13 @@ class TodoApp extends Component {
         <div className="ui grid">
           <div className="row centered">
             <div className="column twelve wide">
-              <form className="ui form" onSubmit={this.handleAddTodoClick}>
+              <form className="ui form" onSubmit={this.addTask}>
                 <div className="inline fields">
                   <div className="twelve wide field">
                     <input
                       type="text"
-                      value={this.state.newTodo}
-                      onChange={this.hanldeInputChange}
+                      value={this.state.value}
+                      onChange={this.handleTaskChange}
                     />
                   </div>
                   <button className="ui button primary" type="submit">
@@ -77,19 +119,21 @@ class TodoApp extends Component {
           <div className="row centered">
             <div className="column twelve wide">
               <div className="grouped fields">
-                {this.state.todos
-                  .filter(todo => !todo.done)
-                  .map(todo => (
-                    <div key={todo.id} className="field">
+                {this.state.tasks
+                  .map((todo, idx) => (
+                    <div key={idx} className="field">
                       <div className="ui checkbox">
                         <input
                           type="checkbox"
-                          onClick={() => {
-                            this.handleCheckboxClick(todo.id)
-                          }}
+                          data-index={idx} oncClick={this.checkTask} checked={todo[1] ? true : false}
                         />
-                        <label>{todo.title}</label>
+                        <label>{todo[1] ? <s> {todo[0]}</s> : todo[0]}</label>
                       </div>
+                      <span>
+                        <button data-index={idx} onClick={this.removeTask}>
+                          X
+                        </button>
+                      </span>
                     </div>
                   ))}
               </div>

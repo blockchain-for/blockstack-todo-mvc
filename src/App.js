@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 
-import { UserSession, AppConfig } from "blockstack"
-import TodoApp from './TodoApp';
+import { UserSession } from "blockstack"
+
 import Login from './Login'; 
 import Profile from './Profile.js';
-
+import TodoApp from './TodoApp';
 import { appConfig } from './constants';
 
 
