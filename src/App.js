@@ -5,8 +5,9 @@ import TodoApp from './TodoApp';
 import Login from './Login'; 
 import Profile from './Profile.js';
 
+import { appConfig } from './constants';
 
-const appConfig = new AppConfig(['store_write', 'publish_data']);
+
 const userSession = new UserSession({ appConfig: appConfig });
 
 class App extends Component {
@@ -21,15 +22,22 @@ class App extends Component {
       userSession
         .handlePendingSignIn()
         .then(userData => {
+          console.log("the userData is " + userData);
           //window.location = window.location.origin;
           window.history.replaceState({}, document.title, "/");
-          console.log("the userData is " + userData);
+          
           this.setState({ userData: userData });
         })
         .catch(err => console.log(err));
     }
   }
 
+  handleSignOut(event) {
+    event.preventDefault();
+    userSession.signUserOut(window.location.origin);
+
+  }
+  
   render() {
     return (
       <div>

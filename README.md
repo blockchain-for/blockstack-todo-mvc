@@ -10,6 +10,9 @@
 
 ## 增加日期
 
+## 登录交互图
+
+![avatar](./app-sign-in.png)
 ## Available Scripts
 
 In the project directory, you can run:
