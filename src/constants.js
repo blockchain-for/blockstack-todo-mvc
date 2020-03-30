@@ -6,7 +6,7 @@ export const TASK_DATA_FILENAME = 'tasks.json'
 
 export const EXPLORER_URL = 'https://explorer.blockstack.org'
 
-export const IS_CRYPT = false;
+export const IS_CRYPT = true;
 
 export const DECRYPT_OPTIONS = { decrypt: IS_CRYPT };
 
