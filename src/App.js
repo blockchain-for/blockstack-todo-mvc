@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 
 import { UserSession } from "blockstack"
 
+import {configure } from 'radiks';
+
 import Login from './Login'; 
 import Profile from './Profile.js';
 import TodoApp from './TodoApp';
@@ -9,6 +11,11 @@ import { appConfig } from './constants';
 
 
 const userSession = new UserSession({ appConfig: appConfig });
+
+configure({
+  apiServer: 'http://localhost:1260',
+  userSession
+});
 
 class App extends Component {
   constructor(props) {
