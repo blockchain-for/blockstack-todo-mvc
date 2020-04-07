@@ -10,7 +10,7 @@ export default class Todo extends Model {
         progress: Number,       // 进度
         isCompleted: Boolean,   // 是否完成
         startAt: Number,        // 开始时间
-        deadLine: Number,       // 截止时间
+        deadline: Number,       // 截止时间
         flag: {
             type: Boolean,
             decrypted: true

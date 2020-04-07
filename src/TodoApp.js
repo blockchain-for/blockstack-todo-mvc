@@ -108,6 +108,11 @@ class TodoApp extends Component {
                       value={this.state.value}
                       onChange={this.handleTaskChange}
                     />
+                    <br />
+                    <input className="twelve wide field"
+                      type="text"
+                      value
+                    />
                   </div>
                   <button className="ui button primary" type="submit">
                     Add todo
