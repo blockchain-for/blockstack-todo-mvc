@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import { UserSession } from "blockstack"
 
-import {configure } from 'radiks';
+import {configure, User, getConfig } from 'radiks';
 
 import Login from './Login'; 
 import Profile from './Profile.js';

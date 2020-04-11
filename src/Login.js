@@ -1,5 +1,7 @@
 import React from "react";
 
+import { User, getConfig } from 'radiks';
+
 class Login extends React.Component {
   constructor(props) {
     super(props);
@@ -8,7 +10,12 @@ class Login extends React.Component {
   }
   
   handleSignIn = () => {
-    this.props.userSession.redirectToSignIn();
+    // this.props.userSession.redirectToSignIn();
+    const {userSession } = getConfig();
+    if (userSession.isSignInPending()) {
+      await userSession.handlePendingSignIn();
+      await User.createWithCurrentUser();
+    } 
   };
 
   render() {
